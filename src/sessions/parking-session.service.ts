@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { ParkingSessionRepository, ParkingSession } from './parking-session.repository'
 import { ParkinglotService } from '../parkinglots/parkinglot.service'
 
@@ -35,5 +35,14 @@ export class ParkingSessionService {
 
   markPaid(id: number, amount: number) {
     return this.repo.update(id, { paidAt: new Date(), paidAmount: amount })
+  }
+
+  exit(id: number) {
+    const session = this.repo.findOne(id)
+    if (!session) throw new NotFoundException(`Session ${id} not found`)
+    if (!session.paidAt) {
+      throw new BadRequestException('결제 후 출차 가능합니다')
+    }
+    return this.repo.update(id, { exitedAt: new Date() })
   }
 }

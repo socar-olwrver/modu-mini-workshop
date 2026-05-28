@@ -14,4 +14,9 @@ export class ParkingSessionController {
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.service.findOne(id)
   }
+
+  @Post(':id/exit')
+  exit(@Param('id', ParseIntPipe) id: number) {
+    return this.service.exit(id)
+  }
 }
