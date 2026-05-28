@@ -1,18 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { ParkingSessionRepository } from './parking-session.repository'
+import { ParkingSessionRepository, ParkingSession } from './parking-session.repository'
+import { ParkinglotService } from '../parkinglots/parkinglot.service'
 
 @Injectable()
 export class ParkingSessionService {
-  // ⚠️ Step 4에서 ParkinglotService 주입받아 진짜 가격으로 바꿉니다
-  private readonly DEFAULT_PRICE_PER_HOUR = 3000
-
-  constructor(private readonly repo: ParkingSessionRepository) {}
+  constructor(
+    private readonly repo: ParkingSessionRepository,
+    private readonly parkinglotService: ParkinglotService, // ★ Step 4 — 진짜 가격 가져오기
+  ) {}
 
   enter(input: { parkinglotId: number; carNumber: string }) {
-    return this.repo.create({
-      ...input,
-      enteredAt: new Date(),
-    })
+    // 입차 전 주차장 존재 확인 — 없으면 404
+    this.parkinglotService.findOne(input.parkinglotId)
+    return this.repo.create({ ...input, enteredAt: new Date() })
   }
 
   findOne(id: number) {
@@ -20,12 +20,16 @@ export class ParkingSessionService {
     if (!session) throw new NotFoundException(`Session ${id} not found`)
     return {
       ...session,
-      currentFee: this.calculateFee(session.enteredAt, new Date()),
+      currentFee: this.calculateFee(session),
     }
   }
 
-  private calculateFee(enteredAt: Date, now: Date): number {
-    const hours = Math.ceil((now.getTime() - enteredAt.getTime()) / (1000 * 60 * 60))
-    return Math.max(1, hours) * this.DEFAULT_PRICE_PER_HOUR
+  calculateFee(session: ParkingSession): number {
+    const lot = this.parkinglotService.findOne(session.parkinglotId)
+    const endTime = session.exitedAt ?? new Date()
+    const hours = Math.ceil(
+      (endTime.getTime() - session.enteredAt.getTime()) / (1000 * 60 * 60),
+    )
+    return Math.max(1, hours) * lot.pricePerHour // ★ 진짜 가격
   }
 }
