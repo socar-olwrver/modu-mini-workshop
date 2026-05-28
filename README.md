@@ -52,6 +52,28 @@ POST /sessions/:id/exit       출차 (결제된 세션만)
 
 DB는 안 붙어 있습니다. Repository 안은 `Map`. 다음 주 #3 강의(토닉)에서 진짜 DB로 갈아낍니다.
 
+## 시연용 데모 (강사용)
+
+슬라이드 09 "아하 모멘트"에서 라이브로 띄우는 단일 파일 NestJS 앱입니다.
+강의 1 #25b raw http 결제 핸들러(80줄)를 NestJS로 옮긴 12줄짜리 코드.
+
+```bash
+# 본 워크샵 서버(3000)와 충돌 안 나게 포트 3001로 뜹니다
+yarn demo:aha
+
+# 정상 요청
+curl -X POST localhost:3001/payments \
+  -H 'Content-Type: application/json' \
+  -d '{"parkinglotId":1,"amount":3000}'
+
+# 검증 실패 (자동 400)
+curl -X POST localhost:3001/payments \
+  -H 'Content-Type: application/json' \
+  -d '{"amount":-100}'
+```
+
+코드 위치: `src/demo-aha.ts` (한 파일)
+
 ## 라이센스
 
 내부 워크샵 자료.
