@@ -407,7 +407,7 @@
       </div>
     </div>
   </div>
-  <div class="footer-l">1 / 18</div>
+  <div class="footer-l">1 / 19</div>
   <div class="footer-r">F · 풀스크린 &nbsp;·&nbsp; ? · 단축키</div>
 </section>
 
@@ -451,7 +451,7 @@
       </p>
     </div>
   </div>
-  <div class="footer-l">2 / 18</div>
+  <div class="footer-l">2 / 19</div>
   <div class="footer-r">도입 <span class="muted">·</span> 시나리오</div>
 </section>
 
@@ -508,7 +508,7 @@
     <div class="card" style="padding: 8px 12px;"><b style="color: var(--accent);">4.</b> 질문은 Step 사이에</div>
   </div>
 
-  <div class="footer-l">3 / 18</div>
+  <div class="footer-l">3 / 19</div>
   <div class="footer-r">도입 <span class="muted">·</span> 워크샵 룰</div>
 </section>
 
@@ -554,7 +554,7 @@
     </div>
   </div>
 
-  <div class="footer-l">4 / 18</div>
+  <div class="footer-l">4 / 19</div>
   <div class="footer-r">소개 <span class="muted">·</span> NestJS 개요</div>
 </section>
 
@@ -597,7 +597,7 @@
     </div>
   </div>
 
-  <div class="footer-l">5 / 18</div>
+  <div class="footer-l">5 / 19</div>
   <div class="footer-r">소개 <span class="muted">·</span> Module / Controller / Service</div>
 </section>
 
@@ -659,7 +659,7 @@
     </div>
   </div>
 
-  <div class="footer-l">6 / 18</div>
+  <div class="footer-l">6 / 19</div>
   <div class="footer-r">소개 <span class="muted">·</span> DI 동작</div>
 </section>
 
@@ -711,7 +711,7 @@
     </div>
   </div>
 
-  <div class="footer-l">7 / 18</div>
+  <div class="footer-l">7 / 19</div>
   <div class="footer-r">소개 <span class="muted">·</span> @Module 옵션</div>
 </section>
 
@@ -767,13 +767,110 @@
     한 모듈 봤으면 다른 모듈도 다 같은 모양.
   </p>
 
-  <div class="footer-l">8 / 18</div>
+  <div class="footer-l">8 / 19</div>
   <div class="footer-r">소개 <span class="muted">·</span> 폴더 구조</div>
 </section>
 
 
 <!-- ════════════════════════════════════════════════════════════════
-     09 · STEP 1 · FIRST CONTROLLER
+     09 · AHA MOMENT · 강의 1 → NestJS
+     ═════════════════════════════════════════════════════════════════ -->
+<section class="slide" data-title="아하 모멘트 · NestJS로 옮기면">
+  <div class="eyebrow">이게 NestJS다 <span class="dot">·</span> 아하 모멘트</div>
+  <h1 class="title small">강의 1 결제 핸들러를 옮기면 — <span class="em">80줄이 12줄.</span></h1>
+
+  <div class="row" style="margin-top: 14px; gap: 16px;">
+    <div style="flex: 1.1;">
+      <div class="muted" style="font-family: ui-monospace, monospace; font-size: 12px; margin-bottom: 5px;">Before · 강의 1 #25b · raw http</div>
+      <div class="term">
+        <div class="term-bar"><div class="dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>http 모듈</div>
+<div class="term-body" style="font-size: 10.5px; padding: 12px 14px;"><span class="kw">const</span> server = http.<span class="fn">createServer</span>((req, res) =&gt; {
+  <span class="kw">if</span> (req.method === <span class="st">'POST'</span> &amp;&amp; req.url === <span class="st">'/payments'</span>) {
+    <span class="kw">let</span> body = <span class="st">''</span>
+    req.<span class="fn">on</span>(<span class="st">'data'</span>, (c) =&gt; body += c)
+    req.<span class="fn">on</span>(<span class="st">'end'</span>, () =&gt; {
+      <span class="kw">let</span> p
+      <span class="kw">try</span> { p = JSON.<span class="fn">parse</span>(body) }
+      <span class="kw">catch</span> { <span class="kw">return</span> <span class="fn">sendJson</span>(res, <span class="nm">400</span>, ...) }
+      <span class="kw">if</span> (<span class="kw">typeof</span> p.parkinglotId !== <span class="st">'number'</span>)
+        <span class="kw">return</span> <span class="fn">sendJson</span>(res, <span class="nm">400</span>, ...)
+      <span class="kw">if</span> (<span class="kw">typeof</span> p.amount !== <span class="st">'number'</span> || p.amount &lt;= <span class="nm">0</span>)
+        <span class="kw">return</span> <span class="fn">sendJson</span>(res, <span class="nm">400</span>, ...)
+      <span class="fn">sendJson</span>(res, <span class="nm">201</span>, {
+        paymentId: Date.<span class="fn">now</span>(),
+        ...p, status: <span class="st">'PAID'</span>,
+      })
+    })
+  } <span class="kw">else</span> {
+    <span class="fn">sendJson</span>(res, <span class="nm">404</span>, ...)
+  }
+})</div>
+      </div>
+      <p class="muted" style="text-align: center; font-size: 11px; margin-top: 3px;">80줄 · 엔드포인트 1개</p>
+    </div>
+    <div style="flex: 1;">
+      <div class="em" style="font-family: ui-monospace, monospace; font-size: 12px; margin-bottom: 5px;">After · NestJS</div>
+      <div class="term">
+        <div class="term-bar"><div class="dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>NestJS</div>
+<div class="term-body" style="font-size: 10.5px; padding: 12px 14px;"><span class="cm">// dto/create-payment.dto.ts</span>
+<span class="kw">export class</span> <span class="fn">CreatePaymentDto</span> {
+  <span class="dec">@IsInt</span>() <span class="dec">@IsPositive</span>()
+  parkinglotId: <span class="kw">number</span>
+
+  <span class="dec">@IsInt</span>() <span class="dec">@IsPositive</span>()
+  amount: <span class="kw">number</span>
+}
+
+<span class="cm">// payment.controller.ts</span>
+<span class="dec">@Controller</span>(<span class="st">'payments'</span>)
+<span class="kw">export class</span> <span class="fn">PaymentController</span> {
+  <span class="dec">@Post</span>()
+  <span class="fn">pay</span>(<span class="dec">@Body</span>() dto: CreatePaymentDto) {
+    <span class="kw">return</span> {
+      paymentId: Date.<span class="fn">now</span>(),
+      ...dto, status: <span class="st">'PAID'</span>,
+    }
+  }
+}</div>
+      </div>
+      <p class="em" style="text-align: center; font-size: 11px; margin-top: 3px; font-weight: 700;">12줄 · 같은 일</p>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 12px;">
+    <div class="card" style="padding: 6px 10px;">
+      <div class="muted" style="font-size: 10px; font-family: ui-monospace, monospace;">body stream</div>
+      <div style="font-size: 12px; color: var(--accent); font-family: ui-monospace, monospace; font-weight: 700;">→ @Body()</div>
+    </div>
+    <div class="card" style="padding: 6px 10px;">
+      <div class="muted" style="font-size: 10px; font-family: ui-monospace, monospace;">JSON.parse</div>
+      <div style="font-size: 12px; color: var(--accent); font-family: ui-monospace, monospace; font-weight: 700;">→ 자동</div>
+    </div>
+    <div class="card" style="padding: 6px 10px;">
+      <div class="muted" style="font-size: 10px; font-family: ui-monospace, monospace;">검증 if 4개</div>
+      <div style="font-size: 12px; color: var(--accent); font-family: ui-monospace, monospace; font-weight: 700;">→ DTO + Pipe</div>
+    </div>
+    <div class="card" style="padding: 6px 10px;">
+      <div class="muted" style="font-size: 10px; font-family: ui-monospace, monospace;">라우팅 if-else</div>
+      <div style="font-size: 12px; color: var(--accent); font-family: ui-monospace, monospace; font-weight: 700;">→ @Controller</div>
+    </div>
+    <div class="card" style="padding: 6px 10px;">
+      <div class="muted" style="font-size: 10px; font-family: ui-monospace, monospace;">writeHead</div>
+      <div style="font-size: 12px; color: var(--accent); font-family: ui-monospace, monospace; font-weight: 700;">→ return</div>
+    </div>
+  </div>
+
+  <p class="em" style="text-align: center; font-size: 12.5px; margin-top: 10px; font-weight: 700;">
+    "강의 1에서 손코딩한 게 어디로 갔는지" — 다음 슬라이드부터 직접 봅니다.
+  </p>
+
+  <div class="footer-l">9 / 19</div>
+  <div class="footer-r">소개 <span class="muted">·</span> 아하 모멘트</div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════════════════════
+     10 · STEP 1 · FIRST CONTROLLER
      ═════════════════════════════════════════════════════════════════ -->
 <section class="slide" data-title="Step 1 · 첫 컨트롤러">
   <div class="eyebrow">🔧 STEP 1 <span class="dot">·</span> 7분</div>
@@ -820,7 +917,7 @@
     </div>
   </div>
 
-  <div class="footer-l">9 / 18</div>
+  <div class="footer-l">10 / 19</div>
   <div class="footer-r">실습 <span class="muted">·</span> Step 1</div>
 </section>
 
@@ -865,7 +962,7 @@
     같은 문제를 백엔드에서는 DI 컨테이너로 풉니다.
   </p>
 
-  <div class="footer-l">10 / 18</div>
+  <div class="footer-l">11 / 19</div>
   <div class="footer-r">실습 <span class="muted">·</span> Step 2</div>
 </section>
 
@@ -914,7 +1011,7 @@
     </div>
   </div>
 
-  <div class="footer-l">11 / 18</div>
+  <div class="footer-l">12 / 19</div>
   <div class="footer-r">실습 <span class="muted">·</span> Step 3</div>
 </section>
 
@@ -957,7 +1054,7 @@
     의도적 에러 시연: imports 빼고 실행 → <code>"Nest can't resolve dependencies"</code>
   </p>
 
-  <div class="footer-l">12 / 18</div>
+  <div class="footer-l">13 / 19</div>
   <div class="footer-r">실습 <span class="muted">·</span> Step 4</div>
 </section>
 
@@ -994,7 +1091,7 @@
     </div>
   </div>
 
-  <div class="footer-l">13 / 18</div>
+  <div class="footer-l">14 / 19</div>
   <div class="footer-r">실습 <span class="muted">·</span> 회사 매핑</div>
 </section>
 
@@ -1042,7 +1139,7 @@
     <span class="em">Step 6에서 Interceptor가 강의 1 결제 약속 회수.</span>
   </p>
 
-  <div class="footer-l">14 / 18</div>
+  <div class="footer-l">15 / 19</div>
   <div class="footer-r">실습 <span class="muted">·</span> Step 5</div>
 </section>
 
@@ -1089,7 +1186,7 @@
     PaymentService는 멱등성 모름. 자기 일만 함. <span class="em">그게 횡단 관심사의 정의.</span>
   </div>
 
-  <div class="footer-l">15 / 18</div>
+  <div class="footer-l">16 / 19</div>
   <div class="footer-r">실습 <span class="muted">·</span> Step 6</div>
 </section>
 
@@ -1140,7 +1237,7 @@
     </div>
   </div>
 
-  <div class="footer-l">16 / 18</div>
+  <div class="footer-l">17 / 19</div>
   <div class="footer-r">실습 <span class="muted">·</span> Step 7</div>
 </section>
 
@@ -1194,7 +1291,7 @@ req.<span class="fn">on</span>(<span class="st">'end'</span>, () =&gt; {
     <div><span class="em">☑ #7-03 blast radius</span> &nbsp;→ &nbsp;Step 4</div>
   </div>
 
-  <div class="footer-l">17 / 18</div>
+  <div class="footer-l">18 / 19</div>
   <div class="footer-r">마무리 <span class="muted">·</span> 회고</div>
 </section>
 
@@ -1249,7 +1346,7 @@ req.<span class="fn">on</span>(<span class="st">'end'</span>, () =&gt; {
     </div>
   </div>
 
-  <div class="footer-l">18 / 18</div>
+  <div class="footer-l">19 / 19</div>
   <div class="footer-r">— 끝 —</div>
 </section>
 
@@ -1259,7 +1356,7 @@ req.<span class="fn">on</span>(<span class="st">'end'</span>, () =&gt; {
 <!-- HUD -->
 <div class="hud" id="hud">
   <button id="btn-prev">←</button>
-  <span class="ctr"><span id="ctr-cur">1</span> / <span id="ctr-tot">18</span></span>
+  <span class="ctr"><span id="ctr-cur">1</span> / <span id="ctr-tot">19</span></span>
   <button id="btn-next">→</button>
   <span class="key">F</span> <span style="color:#888;">풀스크린</span>
   <span class="key">O</span> <span style="color:#888;">목차</span>
