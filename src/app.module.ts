@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common'
 import { InMemoryRedis } from './common/redis.mock'
 import { ParkinglotModule } from './parkinglots/parkinglot.module'
+import { ParkingSessionModule } from './sessions/parking-session.module'
 
 @Module({
   imports: [
     ParkinglotModule,
-    // Step 3: ParkingSessionModule
+    ParkingSessionModule,
     // Step 5: PaymentModule
   ],
   controllers: [],
