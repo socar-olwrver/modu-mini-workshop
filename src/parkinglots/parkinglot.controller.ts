@@ -1,15 +1,17 @@
-import { Controller, Get } from '@nestjs/common'
-
-const PARKINGLOTS = [
-  { id: 1, name: '강남 공영주차장', pricePerHour: 3000 },
-  { id: 2, name: '역삼 빌딩 주차장', pricePerHour: 4000 },
-  { id: 3, name: '삼성 타워 주차장', pricePerHour: 5000 },
-]
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common'
+import { ParkinglotService } from './parkinglot.service'
 
 @Controller('parkinglots')
 export class ParkinglotController {
+  constructor(private readonly service: ParkinglotService) {}
+
   @Get()
   findAll() {
-    return PARKINGLOTS
+    return this.service.findAll()
+  }
+
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.service.findOne(id)
   }
 }
