@@ -32,4 +32,8 @@ export class ParkingSessionService {
     )
     return Math.max(1, hours) * lot.pricePerHour // ★ 진짜 가격
   }
+
+  markPaid(id: number, amount: number) {
+    return this.repo.update(id, { paidAt: new Date(), paidAmount: amount })
+  }
 }
