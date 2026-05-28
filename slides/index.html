@@ -983,41 +983,65 @@
      10 · STEP 2 · DI
      ═════════════════════════════════════════════════════════════════ -->
 <section class="slide" data-title="Step 2 · DI">
-  <div class="eyebrow">🔧 STEP 2 <span class="dot">·</span> 17분</div>
-  <h1 class="title" style="font-size: 38px;">객체가 자기 의존성을 만들지 않고,<br><span class="em">받는다.</span></h1>
+  <div class="eyebrow">🔧 STEP 2 <span class="dot">·</span> 16분</div>
+  <h1 class="title small">객체가 자기 의존성을 만들지 않고, <span class="em">받는다.</span></h1>
 
-  <div class="row" style="margin-top: 26px; gap: 22px;">
-    <div style="flex: 1;">
-      <div class="muted" style="font-family: ui-monospace, monospace; font-size: 12px; margin-bottom: 6px;">Before · Express</div>
+  <div class="row" style="margin-top: 16px; gap: 22px; align-items: flex-start;">
+    <div style="flex: 1.3;">
+      <div class="muted" style="font-family: ui-monospace, monospace; font-size: 12px; margin-bottom: 5px;">Before · Express (직접 만듦)</div>
       <div class="term">
-<div class="term-body" style="font-size: 13px;"><span class="kw">class</span> <span class="fn">PaymentService</span> {
-  <span class="kw">private</span> repo = <span class="kw">new</span> <span class="fn">PaymentRepo</span>(
-    <span class="kw">new</span> <span class="fn">DB</span>()
-  )  <span class="cm">// ❌ 직접 만듦</span>
+<div class="term-body" style="font-size: 12px; padding: 10px 14px;"><span class="kw">class</span> <span class="fn">PaymentService</span> {
+  <span class="kw">private</span> repo = <span class="kw">new</span> <span class="fn">PaymentRepo</span>(<span class="kw">new</span> <span class="fn">DB</span>())  <span class="cm">// ❌</span>
+}</div>
+      </div>
+      <div class="em" style="font-family: ui-monospace, monospace; font-size: 12px; margin: 10px 0 5px;">After · NestJS (받음)</div>
+      <div class="term">
+<div class="term-body" style="font-size: 12px; padding: 10px 14px;"><span class="dec">@Injectable</span>()
+<span class="kw">class</span> <span class="fn">ParkinglotService</span> {
+  <span class="kw">findOne</span>(id: <span class="kw">number</span>): Parkinglot {
+    <span class="kw">const</span> lot = <span class="kw">this</span>.lots.<span class="fn">find</span>(l =&gt; l.id === id)
+    <span class="kw">if</span> (!lot) <span class="kw">throw new</span> <span class="fn">NotFoundException</span>()
+    <span class="kw">return</span> lot
+  }
+}
+
+<span class="dec">@Controller</span>(<span class="st">'parkinglots'</span>)
+<span class="kw">class</span> <span class="fn">ParkinglotController</span> {
+  <span class="kw">constructor</span>(<span class="kw">private</span> service: ParkinglotService) {}  <span class="cm">// ✅ 주입</span>
+
+  <span class="dec">@Get</span>(<span class="st">':id'</span>)
+  <span class="fn">findOne</span>(<span class="dec">@Param</span>(<span class="st">'id'</span>, ParseIntPipe) id: <span class="kw">number</span>) {
+    <span class="kw">return</span> <span class="kw">this</span>.service.<span class="fn">findOne</span>(id)
+  }
 }</div>
       </div>
     </div>
     <div style="flex: 1;">
-      <div class="em" style="font-family: ui-monospace, monospace; font-size: 12px; margin-bottom: 6px;">After · NestJS</div>
-      <div class="term">
-<div class="term-body" style="font-size: 13px;"><span class="dec">@Injectable</span>()
-<span class="kw">class</span> <span class="fn">PaymentService</span> {
-  <span class="kw">constructor</span>(
-    <span class="kw">private</span> repo: PaymentRepo,  <span class="cm">// ✅ 받음</span>
-  ) {}
-}</div>
+      <div class="card accent" style="border-width: 2px;">
+        <div class="k">미션</div>
+        <div class="v"><code>ParkinglotService</code> 분리 + <code>GET /:id</code></div>
+        <div class="muted" style="font-size: 12px; margin-top: 8px; line-height: 1.6;">
+          <b>신규:</b> <code>parkinglot.service.ts</code><br>
+          <b>수정:</b> <code>controller.ts</code>, <code>module.ts</code><br>
+          <span class="em">module.providers에 Service 추가</span>
+        </div>
       </div>
+      <div class="term" style="margin-top: 12px;">
+        <div class="term-bar">terminal</div>
+<div class="term-body" style="font-size: 11.5px; padding: 10px 14px;">$ curl localhost:3000/parkinglots/1
+<span class="ok">→ { id:1, name:<span class="st">'강남...'</span>, ... }</span>
+
+$ curl localhost:3000/parkinglots/999
+<span class="err">→ 404 Not Found</span></div>
+      </div>
+      <div class="callout" style="margin-top: 10px; font-size: 12px; padding: 8px 12px;">
+        FE 비유 — props drilling을 Context로 푼 것과 같은 원리.
+      </div>
+      <p class="muted" style="margin-top: 8px; font-size: 11.5px; text-align: center; font-family: ui-monospace, monospace;">
+        끝나면 → 작동 확인 후 다음 Step
+      </p>
     </div>
   </div>
-
-  <div class="callout" style="margin-top: 26px; font-size: 15px;">
-    <code class="em">@Injectable()</code> — DI 컨테이너에 맡긴다는 표식
-  </div>
-
-  <p class="body" style="margin-top: 22px;">
-    FE 비유 — React에서 props drilling 풀려고 만든 <b>Context API와 같은 원리</b>.<br>
-    같은 문제를 백엔드에서는 DI 컨테이너로 풉니다.
-  </p>
 
   <div class="footer-l">12 / 20</div>
   <div class="footer-r">실습 <span class="muted">·</span> Step 2</div>
@@ -1029,13 +1053,13 @@
      ═════════════════════════════════════════════════════════════════ -->
 <section class="slide" data-title="Step 3 · Module 3 박스">
   <div class="eyebrow">🔧 STEP 3 <span class="dot">·</span> 14분</div>
-  <h1 class="title">Module은 박스 세 개입니다.</h1>
+  <h1 class="title small">차량 입차. Module은 <span class="em">박스 세 개</span>로 시작.</h1>
 
-  <div class="row" style="margin-top: 20px; gap: 28px; align-items: flex-start;">
+  <div class="row" style="margin-top: 16px; gap: 22px; align-items: flex-start;">
     <div style="flex: 1.3;">
       <div class="term">
         <div class="term-bar"><div class="dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>parking-session.module.ts</div>
-<div class="term-body"><span class="dec">@Module</span>({
+<div class="term-body" style="font-size: 12px; padding: 10px 14px;"><span class="dec">@Module</span>({
   <span class="fn">providers</span>: [
     ParkingSessionService,
     ParkingSessionRepository,
@@ -1049,22 +1073,41 @@
 })
 <span class="kw">export class</span> <span class="fn">ParkingSessionModule</span> {}</div>
       </div>
+      <div class="term" style="margin-top: 10px;">
+        <div class="term-bar"><div class="dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>parking-session.service.ts (요금 계산)</div>
+<div class="term-body" style="font-size: 12px; padding: 10px 14px;"><span class="dec">@Injectable</span>()
+<span class="kw">class</span> <span class="fn">ParkingSessionService</span> {
+  <span class="fn">enter</span>(input) { <span class="kw">return</span> <span class="kw">this</span>.repo.<span class="fn">create</span>({ ...input, enteredAt: <span class="kw">new</span> Date() }) }
+
+  <span class="fn">findOne</span>(id) { <span class="kw">return</span> { ...session, currentFee: <span class="kw">this</span>.<span class="fn">calculateFee</span>(...) } }
+}</div>
+      </div>
     </div>
     <div style="flex: 1;">
       <div class="card accent" style="border-width: 2px;">
-        <div class="k">DB는 안 붙입니다</div>
-        <div class="v" style="font-size: 14px; margin-top: 6px;">
-          Repository 안은 <code>Map</code>.
-        </div>
-        <div class="muted" style="font-size: 13px; margin-top: 10px;">
-          같은 인터페이스 그대로,<br>
-          다음 주 <b>#3 토닉</b>이<br>
-          진짜 <b>MySQL</b>로 갈아낍니다.
-        </div>
-        <div class="em" style="font-size: 13px; margin-top: 10px; font-weight: 700;">
-          → Service 코드 한 줄도 안 건드리고.
+        <div class="k">미션</div>
+        <div class="v"><code>POST /sessions/enter</code><br><code>GET /sessions/:id</code></div>
+        <div class="muted" style="font-size: 12px; margin-top: 8px; line-height: 1.6;">
+          <b>신규:</b> <code>sessions/</code> 폴더 4파일<br>
+          <code>repository · service ·</code><br>
+          <code>controller · module</code>
         </div>
       </div>
+      <div class="term" style="margin-top: 10px;">
+        <div class="term-bar">terminal</div>
+<div class="term-body" style="font-size: 11px; padding: 10px 14px;">$ curl -X POST .../sessions/enter \
+   -d <span class="st">'{"parkinglotId":1,"carNumber":"12가3456"}'</span>
+<span class="ok">→ { id:1, enteredAt:<span class="st">'...'</span> }</span>
+
+$ curl localhost:3000/sessions/1
+<span class="ok">→ currentFee: 3000</span>  <span class="cm">(가짜 가격)</span></div>
+      </div>
+      <div class="callout" style="margin-top: 10px; font-size: 11px; padding: 8px 12px;">
+        <b>DB 안 붙임.</b> Repository는 <code>Map</code>. 다음 주 #3 토닉이 그대로 MySQL로.
+      </div>
+      <p class="muted" style="margin-top: 8px; font-size: 11.5px; text-align: center; font-family: ui-monospace, monospace;">
+        끝나면 → 작동 확인 후 다음 Step
+      </p>
     </div>
   </div>
 
@@ -1078,38 +1121,60 @@
      ═════════════════════════════════════════════════════════════════ -->
 <section class="slide" data-title="Step 4 · 모듈 경계 = blast radius">
   <div class="eyebrow">🔧 STEP 4 <span class="dot">·</span> 8분 <span class="dot">·</span> 오늘의 핵심</div>
-  <h1 class="title small">이 API가 죽으면, 어디까지 끌고 들어가나?</h1>
-  <p class="muted" style="font-size: 14px; margin-top: -8px;">강의 1 슬라이드 7 · 6가지 질문 중 3번. <span class="em">답은 모듈 경계예요.</span></p>
+  <h1 class="title small">이 API가 죽으면, 어디까지 끌고 들어가나? <span class="muted" style="font-size: 16px;">— 답은 모듈 경계.</span></h1>
 
-  <div class="row" style="margin-top: 22px; gap: 18px; align-items: flex-start;">
-    <div class="arch" style="flex: 2;">
-      <div class="mod">
-        <div class="name">ParkinglotModule</div>
-        <div class="layer">providers:</div>
-        <div class="layer">&nbsp;&nbsp;[ParkinglotSvc]</div>
-        <div class="layer" style="margin-top: 8px; color: var(--accent);">exports:</div>
-        <div class="layer" style="color: var(--accent);">&nbsp;&nbsp;[ParkinglotSvc]</div>
-        <div class="label">"공개한 것만 외부에서 본다"</div>
+  <div class="row" style="margin-top: 14px; gap: 22px; align-items: flex-start;">
+    <div style="flex: 1.3;">
+      <div class="arch">
+        <div class="mod">
+          <div class="name">ParkinglotModule</div>
+          <div class="layer">providers:</div>
+          <div class="layer">&nbsp;&nbsp;[ParkinglotSvc]</div>
+          <div class="layer" style="margin-top: 6px; color: var(--accent);">exports:</div>
+          <div class="layer" style="color: var(--accent);">&nbsp;&nbsp;[ParkinglotSvc]</div>
+          <div class="label">"공개한 것만 보임"</div>
+        </div>
+        <div class="arr">▶</div>
+        <div class="mod" style="background: var(--accent-soft); border-color: #f3c8b5;">
+          <div class="name">ParkingSessionModule</div>
+          <div class="layer" style="color: var(--accent);">imports:</div>
+          <div class="layer" style="color: var(--accent);">&nbsp;&nbsp;[ParkinglotModule]</div>
+          <div class="layer" style="margin-top: 6px;">providers:</div>
+          <div class="layer">&nbsp;&nbsp;[SessionSvc] ← 주입</div>
+          <div class="label">"빌려쓴다"</div>
+        </div>
       </div>
-      <div class="arr">▶</div>
-      <div class="mod" style="background: var(--accent-soft); border-color: #f3c8b5;">
-        <div class="name">ParkingSessionModule</div>
-        <div class="layer" style="color: var(--accent);">imports:</div>
-        <div class="layer" style="color: var(--accent);">&nbsp;&nbsp;[ParkinglotModule]</div>
-        <div class="layer" style="margin-top: 8px;">providers:</div>
-        <div class="layer">&nbsp;&nbsp;[SessionSvc] ← 주입</div>
-        <div class="label">"빌려쓴다"</div>
+      <div class="callout" style="margin-top: 14px; text-align: center; font-size: 16px; font-weight: 700;">
+        모듈 경계 = 폭발 반경
       </div>
     </div>
-  </div>
 
-  <div class="callout" style="margin-top: 18px; text-align: center; font-size: 18px; font-weight: 700;">
-    모듈 경계 = 폭발 반경
-  </div>
+    <div style="flex: 1;">
+      <div class="card accent" style="border-width: 2px;">
+        <div class="k">미션</div>
+        <div class="v">Session이 <code>ParkinglotService</code> 빌려옴 → 진짜 가격</div>
+        <div class="muted" style="font-size: 12px; margin-top: 8px; line-height: 1.6;">
+          <b>수정:</b> <code>session.service.ts</code><br>
+          (ParkinglotService 주입)<br>
+          <b>수정:</b> <code>session.module.ts</code><br>
+          (<code>imports: [ParkinglotModule]</code>)
+        </div>
+      </div>
+      <div class="term" style="margin-top: 10px;">
+        <div class="term-bar">terminal · ★ 의도적 에러 먼저</div>
+<div class="term-body" style="font-size: 10.5px; padding: 10px 14px;"><span class="cm"># imports 빼고 yarn dev</span>
+<span class="err">Nest can't resolve dependencies of
+ParkingSessionService (?, ?)</span>
 
-  <p class="muted" style="text-align: center; margin-top: 12px; font-size: 13px;">
-    의도적 에러 시연: imports 빼고 실행 → <code>"Nest can't resolve dependencies"</code>
-  </p>
+<span class="cm"># imports 추가 후</span>
+강남(1) 입차 → <span class="ok">currentFee 3000</span>
+삼성(3) 입차 → <span class="ok">currentFee 5000</span>  <span class="em">진짜 가격!</span></div>
+      </div>
+      <p class="muted" style="margin-top: 8px; font-size: 11.5px; text-align: center; font-family: ui-monospace, monospace;">
+        끝나면 → 작동 확인 후 다음 Step
+      </p>
+    </div>
+  </div>
 
   <div class="footer-l">14 / 20</div>
   <div class="footer-r">실습 <span class="muted">·</span> Step 4</div>
@@ -1157,44 +1222,76 @@
      14 · STEP 5 · CROSS-CUTTING 4
      ═════════════════════════════════════════════════════════════════ -->
 <section class="slide" data-title="Step 5 · 횡단 관심사 4종">
-  <div class="eyebrow">🔧 STEP 5 <span class="dot">·</span> 13분</div>
-  <h1 class="title small">핸들러 앞뒤로 끼어드는 친구들이 있습니다.</h1>
+  <div class="eyebrow">🔧 STEP 5 <span class="dot">·</span> 11분</div>
+  <h1 class="title small">결제 받기 전, 검문 두 단계. <span class="em">Pipe + Guard.</span></h1>
 
-  <div class="grid-4" style="margin-top: 28px;">
-    <div class="card">
-      <div class="k">Guard</div>
-      <div class="v" style="font-weight: 700;">들여보낼지 말지</div>
-      <div class="muted" style="font-size: 12px; margin-top: 8px;">인증 · 권한</div>
-      <div class="muted" style="font-size: 11px; margin-top: 12px; font-family: ui-monospace, monospace;">반환: boolean</div>
-      <div class="em" style="font-size: 11px; margin-top: 6px; font-family: ui-monospace, monospace;">Step 5</div>
+  <div class="row" style="margin-top: 14px; gap: 22px; align-items: flex-start;">
+    <div style="flex: 1.3;">
+      <div class="term">
+        <div class="term-bar"><div class="dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>create-payment.dto.ts</div>
+<div class="term-body" style="font-size: 12px; padding: 10px 14px;"><span class="kw">export class</span> <span class="fn">CreatePaymentDto</span> {
+  <span class="dec">@IsInt</span>() <span class="dec">@IsPositive</span>()
+  sessionId: <span class="kw">number</span>
+}</div>
+      </div>
+      <div class="term" style="margin-top: 10px;">
+        <div class="term-bar"><div class="dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>payment.controller.ts</div>
+<div class="term-body" style="font-size: 12px; padding: 10px 14px;"><span class="dec">@Controller</span>(<span class="st">'payments'</span>)
+<span class="dec">@UseGuards</span>(JwtAuthGuard)        <span class="cm">// ← 인증</span>
+<span class="kw">class</span> <span class="fn">PaymentController</span> {
+  <span class="dec">@Post</span>()
+  <span class="fn">pay</span>(<span class="dec">@Body</span>() dto: CreatePaymentDto,  <span class="cm">// ← 검증</span>
+      <span class="dec">@Req</span>() req) {
+    <span class="kw">return</span> <span class="kw">this</span>.service.<span class="fn">pay</span>({ ...dto, userId: req.user.id })
+  }
+}</div>
+      </div>
+      <div style="margin-top: 10px; display: flex; gap: 8px;">
+        <div class="card" style="flex: 1; padding: 6px 10px; text-align: center;">
+          <div class="k" style="font-size: 10px;">Guard</div>
+          <div style="font-size: 11px;">인증 (boolean)</div>
+        </div>
+        <div class="card" style="flex: 1; padding: 6px 10px; text-align: center;">
+          <div class="k" style="font-size: 10px;">Pipe</div>
+          <div style="font-size: 11px;">검증 (DTO)</div>
+        </div>
+        <div class="card" style="flex: 1; padding: 6px 10px; text-align: center; opacity: 0.55;">
+          <div class="k" style="font-size: 10px;">Interceptor</div>
+          <div style="font-size: 11px;">→ Step 6</div>
+        </div>
+        <div class="card" style="flex: 1; padding: 6px 10px; text-align: center; opacity: 0.55;">
+          <div class="k" style="font-size: 10px;">Filter</div>
+          <div style="font-size: 11px;">시간 남으면</div>
+        </div>
+      </div>
     </div>
-    <div class="card">
-      <div class="k">Pipe</div>
-      <div class="v" style="font-weight: 700;">데이터 변환 + 검증</div>
-      <div class="muted" style="font-size: 12px; margin-top: 8px;">DTO 검증</div>
-      <div class="muted" style="font-size: 11px; margin-top: 12px; font-family: ui-monospace, monospace;">반환: 변환값 / throw</div>
-      <div class="em" style="font-size: 11px; margin-top: 6px; font-family: ui-monospace, monospace;">Step 5</div>
-    </div>
-    <div class="card accent" style="border-width: 2px;">
-      <div class="k">Interceptor</div>
-      <div class="v" style="font-weight: 700;">핸들러 전후</div>
-      <div class="muted" style="font-size: 12px; margin-top: 8px;">멱등성 · 로깅</div>
-      <div class="muted" style="font-size: 11px; margin-top: 12px; font-family: ui-monospace, monospace;">반환: Observable</div>
-      <div class="em" style="font-size: 11px; margin-top: 6px; font-family: ui-monospace, monospace;">Step 6 ★</div>
-    </div>
-    <div class="card">
-      <div class="k">Filter</div>
-      <div class="v" style="font-weight: 700;">예외 → 응답</div>
-      <div class="muted" style="font-size: 12px; margin-top: 8px;">에러 포맷 통일</div>
-      <div class="muted" style="font-size: 11px; margin-top: 12px; font-family: ui-monospace, monospace;">반환: 응답</div>
-      <div class="muted" style="font-size: 11px; margin-top: 6px; font-family: ui-monospace, monospace;">시간 남으면</div>
+
+    <div style="flex: 1;">
+      <div class="card accent" style="border-width: 2px;">
+        <div class="k">미션</div>
+        <div class="v"><code>PaymentModule</code> + 검증 + 인증</div>
+        <div class="muted" style="font-size: 12px; margin-top: 8px; line-height: 1.6;">
+          <b>신규:</b> <code>payments/</code> 5파일<br>
+          <code>dto · repository · service ·</code><br>
+          <code>controller · module</code>
+        </div>
+      </div>
+      <div class="term" style="margin-top: 10px;">
+        <div class="term-bar">terminal</div>
+<div class="term-body" style="font-size: 11px; padding: 10px 14px;"><span class="cm"># 인증 없이</span>
+<span class="err">→ 401 Unauthorized</span>
+
+<span class="cm"># DTO 검증 실패</span>
+<span class="err">→ 400 sessionId required</span>
+
+<span class="cm"># 정상 결제</span>
+<span class="ok">→ 201 { id:1, amount:9000, PAID }</span></div>
+      </div>
+      <p class="muted" style="margin-top: 8px; font-size: 11.5px; text-align: center; font-family: ui-monospace, monospace;">
+        끝나면 → 작동 확인 후 다음 Step
+      </p>
     </div>
   </div>
-
-  <p class="body" style="margin-top: 22px;">
-    이번 Step에서 <b>Pipe + Guard</b>. 결제 검증 + 인증.<br>
-    <span class="em">Step 6에서 Interceptor 한 줄로 강의 1 결제 약속 회수.</span>
-  </p>
 
   <div class="footer-l">16 / 20</div>
   <div class="footer-r">실습 <span class="muted">·</span> Step 5</div>
@@ -1205,42 +1302,69 @@
      15 · STEP 6 · IDEMPOTENCY
      ═════════════════════════════════════════════════════════════════ -->
 <section class="slide" data-title="Step 6 · 결제 멱등성">
-  <div class="eyebrow">🔧 STEP 6 <span class="dot">·</span> 17분 <span class="dot">·</span> 강의 1 최대 약속 회수</div>
-  <h1 class="title" style="font-size: 32px;">네트워크 끊겨 두 번 누른 김씨.<br><span class="em">카드는 한 번만 긁힙니다.</span></h1>
+  <div class="eyebrow">🔧 STEP 6 <span class="dot">·</span> 17분 <span class="dot">·</span> 강의 1 최대 약속 회수 ★★★</div>
+  <h1 class="title small">네트워크 끊겨 두 번 누른 김씨. <span class="em">카드는 한 번만.</span></h1>
 
-  <div class="row" style="margin-top: 20px; gap: 18px;">
-    <div style="flex: 1;">
-      <div class="muted" style="font-family: ui-monospace, monospace; font-size: 12px; margin-bottom: 6px;">1번째 요청</div>
-      <div class="term">
-<div class="term-body" style="font-size: 12px;"><span class="kw">POST</span> /payments
-<span class="fn">Idempotency-Key</span>: 7a3f...
+  <div class="row" style="margin-top: 14px; gap: 22px; align-items: flex-start;">
+    <div style="flex: 1.3;">
+      <div class="row" style="gap: 10px;">
+        <div style="flex: 1;">
+          <div class="muted" style="font-family: ui-monospace, monospace; font-size: 11px; margin-bottom: 4px;">1번째 요청</div>
+          <div class="term">
+<div class="term-body" style="font-size: 11px; padding: 10px 12px;"><span class="kw">POST</span> /payments
+<span class="fn">Idem-Key</span>: 7a3f...
    ↓
 [Interceptor]
   ① SET NX EX → 통과
   ② 핸들러 실행
   ③ 응답 캐시
    ↓
-<span class="ok">{ id: 1, amount: 9000, PAID }</span></div>
-      </div>
-    </div>
-    <div style="flex: 1;">
-      <div class="em" style="font-family: ui-monospace, monospace; font-size: 12px; margin-bottom: 6px;">2번째 요청 (같은 키)</div>
-      <div class="term">
-<div class="term-body" style="font-size: 12px;"><span class="kw">POST</span> /payments
-<span class="fn">Idempotency-Key</span>: 7a3f...
+<span class="ok">{ id:1, 9000, PAID }</span></div>
+          </div>
+        </div>
+        <div style="flex: 1;">
+          <div class="em" style="font-family: ui-monospace, monospace; font-size: 11px; margin-bottom: 4px;">2번째 (같은 키)</div>
+          <div class="term">
+<div class="term-body" style="font-size: 11px; padding: 10px 12px;"><span class="kw">POST</span> /payments
+<span class="fn">Idem-Key</span>: 7a3f...
    ↓
 [Interceptor]
   ① 캐시 발견
-  → 핸들러 호출 <span class="warn">안 함</span>
+  → 핸들러 <span class="warn">호출 X</span>
    ↓
-<span class="ok">{ id: 1, amount: 9000, PAID }</span>  <span class="cm">← 같은 응답</span></div>
+<span class="ok">{ id:1, 9000, PAID }</span>  <span class="cm">← 같음</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="callout" style="margin-top: 12px; font-size: 12px; padding: 10px 14px;">
+        <b>강의 1 #11 + #26 회수</b> — PaymentService는 멱등성 모름. 자기 일만 함.
       </div>
     </div>
-  </div>
 
-  <div class="callout" style="margin-top: 22px;">
-    <b>강의 1 #11 약속 + #26 race · Redis NX 단서</b> — 지금 회수합니다.<br>
-    PaymentService는 멱등성 모름. 자기 일만 함. <span class="em">그게 횡단 관심사의 정의.</span>
+    <div style="flex: 1;">
+      <div class="card accent" style="border-width: 2px;">
+        <div class="k">미션</div>
+        <div class="v"><code>IdempotencyInterceptor</code> + 출차</div>
+        <div class="muted" style="font-size: 12px; margin-top: 8px; line-height: 1.6;">
+          <b>신규:</b> <code>common/idempotency.<br>interceptor.ts</code><br>
+          <b>수정:</b> <code>payment.controller</code><br>
+          (<code>@UseInterceptors</code>)<br>
+          <b>수정:</b> session에 <code>exit</code>
+        </div>
+      </div>
+      <div class="term" style="margin-top: 10px;">
+        <div class="term-bar">전체 시나리오 시연 ★</div>
+<div class="term-body" style="font-size: 10.5px; padding: 10px 14px;">① <span class="ok">입차</span>     POST /sessions/enter
+② <span class="ok">요금</span>     GET  /sessions/1 → 9000
+③ <span class="ok">결제 1</span>   POST /payments [Idem-Key:7a3f]
+④ <span class="em">결제 2</span>   POST /payments [Idem-Key:7a3f]
+              <span class="warn">→ 같은 paymentId!</span>
+⑤ <span class="ok">출차</span>     POST /sessions/1/exit</div>
+      </div>
+      <p class="muted" style="margin-top: 8px; font-size: 11.5px; text-align: center; font-family: ui-monospace, monospace;">
+        끝나면 → 작동 확인 후 다음 Step
+      </p>
+    </div>
   </div>
 
   <div class="footer-l">17 / 20</div>
@@ -1253,12 +1377,12 @@
      ═════════════════════════════════════════════════════════════════ -->
 <section class="slide" data-title="Step 7 · 단위 테스트">
   <div class="eyebrow">🔧 STEP 7 <span class="dot">·</span> 4분</div>
-  <h1 class="title">DI는 왜 쓰는가.<br><span class="em">답은 여기 있습니다.</span></h1>
+  <h1 class="title small">DI는 왜 쓰는가. <span class="em">답은 여기 있습니다.</span></h1>
 
-  <div class="row" style="margin-top: 24px; gap: 24px; align-items: flex-start;">
+  <div class="row" style="margin-top: 16px; gap: 22px; align-items: flex-start;">
     <div class="term" style="flex: 1.3;">
       <div class="term-bar"><div class="dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>payment.service.spec.ts</div>
-<div class="term-body" style="font-size: 12px;"><span class="fn">describe</span>(<span class="st">'PaymentService'</span>, () =&gt; {
+<div class="term-body" style="font-size: 11.5px; padding: 10px 14px;"><span class="fn">describe</span>(<span class="st">'PaymentService'</span>, () =&gt; {
   <span class="fn">beforeEach</span>(<span class="kw">async</span> () =&gt; {
     <span class="kw">const</span> module = <span class="kw">await</span> Test.<span class="fn">createTestingModule</span>({
       providers: [
@@ -1279,18 +1403,34 @@
   })
 })</div>
     </div>
+
     <div style="flex: 1;">
-      <div class="card">
-        <ul class="dotted" style="font-size: 14px;">
-          <li><span class="ok" style="color: var(--ok);">✓</span> DB 안 띄움</li>
-          <li><span class="ok" style="color: var(--ok);">✓</span> HTTP 서버 안 띄움</li>
-          <li><span class="ok" style="color: var(--ok);">✓</span> PaymentService만 단독</li>
-        </ul>
+      <div class="card accent" style="border-width: 2px;">
+        <div class="k">미션</div>
+        <div class="v"><code>PaymentService</code> 단위 테스트 1개</div>
+        <div class="muted" style="font-size: 12px; margin-top: 8px; line-height: 1.6;">
+          <b>신규:</b> <code>payment.service.spec.ts</code><br>
+          <code>Test.createTestingModule</code><br>
+          <code>useValue</code>로 Mock 주입
+        </div>
       </div>
-      <div class="card accent" style="margin-top: 14px; border-width: 2px;">
-        <div class="v" style="font-weight: 700;">Express에서 이거 짜는 법<br>한 번 상상해보세요.</div>
-        <div class="muted" style="font-size: 12px; margin-top: 8px;">못 짭니다. <code>new PaymentRepo()</code> 직접 만들면 Mock 못 박음.</div>
+      <div class="term" style="margin-top: 10px;">
+        <div class="term-bar">terminal</div>
+<div class="term-body" style="font-size: 11px; padding: 10px 14px;">$ yarn test
+ PASS  payment.service.spec.ts
+  PaymentService
+   <span class="ok">✓ 결제 시 세션 요금만큼 기록</span>
+   <span class="ok">✓ 재결제는 기존 응답 반환</span>
+
+<span class="cm"># DB 안 띄움 · HTTP 안 띄움</span>
+<span class="cm"># Service만 단독</span></div>
       </div>
+      <div class="callout" style="margin-top: 10px; font-size: 12px; padding: 8px 12px;">
+        Express에서 이거 짜는 법 상상해보세요. <span class="em">못 짭니다.</span>
+      </div>
+      <p class="muted" style="margin-top: 8px; font-size: 11.5px; text-align: center; font-family: ui-monospace, monospace;">
+        끝나면 → 회고로
+      </p>
     </div>
   </div>
 
