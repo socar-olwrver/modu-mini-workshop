@@ -27,15 +27,17 @@ git tag --list
 # step1-done / step2-done / ... / step7-done 까지 보이면 OK
 ```
 
-## 막혔을 때
+## 따라치다 막혔을 때
 
-특정 Step에서 따라가지 못하겠다 싶으면 바로 다음 Step의 시작점으로 점프하세요.
+다음 Step의 시작점으로 점프하면 됩니다. 강사 화면은 계속 따라갈 수 있어요.
 
 ```bash
 git stash                   # 진행하던 거 임시 보관
 git checkout step3-done     # 예: Step 3 완성본부터 시작
 yarn dev
 ```
+
+각 Step의 파일·코드·시연 curl은 슬라이드에 그대로 나옵니다 (curl은 클릭 한 번에 복사).
 
 ## 결과물
 
